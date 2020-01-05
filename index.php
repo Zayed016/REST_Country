@@ -1,5 +1,6 @@
 <?php
 header("Access-Control-Allow-Origin: *");
+error_reporting(E_ERROR | E_PARSE);
 
 if(!isset($_GET['q']) || empty($_GET['q'])) {
     header('HTTP/1.1 404 Result not found');
@@ -7,24 +8,28 @@ if(!isset($_GET['q']) || empty($_GET['q'])) {
     die(json_encode(array('message' => 'ERROR', 'code' => 404 )));
 }
 
-set_error_handler(function ($err_severity, $err_msg, $err_file, $err_line, array $err_context)
-{
- throw new ErrorException( $err_msg, 0, $err_severity, $err_file, $err_line );
-}, E_WARNING);
+//get by name and code (Api call)
+$get = file_get_contents('https://restcountries.eu/rest/v2/name/'.$_GET['q']);
+$get2 = file_get_contents('https://restcountries.eu/rest/v2/alpha/'.$_GET['q']);
 
-try {
-    $get = file_get_contents('https://restcountries.eu/rest/v2/name/'.$_GET['q']);
+$get = json_decode($get);
+$get2 = json_decode($get2);
 
-} catch (Exception $e) {
+$response = $get;
+
+if(!empty($get2))
+if(!in_array($get2,$response)){
+    array_push($response,$get2);
+}
+
+//if empty send error
+if (empty($response)) {
     header('HTTP/1.1 404 Result not found');
     header('Content-Type: application/json; charset=UTF-8');
     die(json_encode(array('message' => 'ERROR', 'code' => 404 )));
 }
 
-restore_error_handler();
-
-$response = json_decode($get);
-
+//Sorting
 usort($response, function($a, $b) {
     $c = $a->name[0] <=> $b->name[0];
     $c .= $a->population <=> $b->population;
@@ -34,6 +39,7 @@ usort($response, function($a, $b) {
 $region = array();
 $subregion = array();
 
+// View the result
 echo "<table>";
 echo "<tr>
 <th>Name</th>
@@ -79,15 +85,17 @@ foreach($response as $key => $value){
     array_push($subregion,$value->subregion);
 }
 echo "</table>";
-
+// counting response
 echo "<h3>Number of Country (s): ".count($response)."</h3>";
 
 echo "<h3>Regions:</h3>";
 foreach(array_count_values($region) as $key => $value){
  echo $key." - ".$value."<br>";
 }
+
 echo "<h3>Sub Regions:</h3>";
 foreach(array_count_values($subregion) as $key => $value){
     echo $key." - ".$value."<br>";
 }
+
 ?>
