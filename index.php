@@ -30,11 +30,18 @@ if (empty($response)) {
 }
 
 //Sorting
+if(isset($_GET['s'])){
+if($_GET['s']=='n')
 usort($response, function($a, $b) {
-    $c = $a->name[0] <=> $b->name[0];
-    $c .= $a->population <=> $b->population;
+    $c = $a->name <=> $b->name;
     return $c;
 });
+else if($_GET['s']=='p')
+usort($response, function($a, $b) {
+    $c = $a->population <=> $b->population;
+    return $c;
+});
+}
 
 $region = array();
 $subregion = array();

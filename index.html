@@ -1,49 +1,55 @@
 <!DOCTYPE html>
 <html>
-  <body>
-    <h2>Search Country by name or code</h2>
-    <input id="country" type="text" />
-    <button id="search">Search</button>
-    <p id="error"></p>
-    <div id="result">
 
-    </div>
-  </body>
+<body>
+  <h2>Search Country by name or code</h2>
+  <p>Sort By
+    <select id="sort" name="s">
+      <option value="n">Name</option>
+      <option value="p">Population</option>
+    </select></p>
+  <input id="country" type="text" />
+  <button id="search">Search</button>
+  <p id="error"></p>
+  <div id="result">
+
+  </div>
+</body>
+
 </html>
 
 <script src="https://code.jquery.com/jquery-2.2.4.min.js"
-  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
-  crossorigin="anonymous"></script>
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
 
 <script>
-  $("#search").click(function() {
+  $("#search").click(function () {
     $.ajax({
-            url: "http://localhost:8000/",
-            type: "get",
-            data: 'q='+ $("#country").val() ,
-            success: function (response) {
-                $("#error").html("");
-                $("#result").html(response);
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                $("#error").html("Result not found");
-                $("#result").html("");
-            }
-        });
+      url: "http://localhost:8000/",
+      type: "get",
+      data: 'q=' + $("#country").val() + '&s=' + $("#sort").val(),
+      success: function (response) {
+        $("#error").html("");
+        $("#result").html(response);
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        $("#error").html("Result not found");
+        $("#result").html("");
+      }
+    });
   });
 </script>
 
 <style>
-table {
-  border-collapse: collapse;
-}
+  table {
+    border-collapse: collapse;
+  }
 
-table, th, td {
-  border: 1px solid black;
-  padding: 5px;
-}
+  table, th, td {
+    border: 1px solid black;
+    padding: 5px;
+  }
 
-#error{
-    color:red;
-}
+  #error {
+    color: red;
+  }
 </style>
